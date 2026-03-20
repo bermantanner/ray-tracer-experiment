@@ -1,0 +1,55 @@
+#define GLM_ENABLE_EXPERIMENTAL
+#include "MirrorMaterial.h"
+
+#include <glm/glm.hpp>
+#include <iostream>
+#include <mutex>
+
+using namespace glm;
+
+namespace {
+constexpr float kRayEpsilon = 0.001f;
+}  // namespace
+
+Ray MirrorMaterial::sample_ray_and_update_radiance(Ray& ray, Intersection& intersection) {
+    /**
+     * Calculate the next ray after intersection with the model.
+     * This will be used for recursive ray tracing.
+     */
+
+    vec3 normal = intersection.normal;
+    vec3 point = intersection.point;
+
+    // Specular Reflection
+
+// Step 1: Calculate reflection direction
+    /**
+     * TODO(Task 6.2):
+     * Calculate the perfect mirror reflection direction.
+     */
+    vec3 d = ray.dir;
+    vec3 reflection_dir = glm::reflect(d, normal); 
+
+    // Step 2: Calculate radiance
+    /**
+     * TODO(Task 6.2):
+     * Calculate throughput update for mirror bounce.
+     * Note:
+     * - C_specular = `this->reflectance`
+     */
+    vec3 W_specular = this->reflectance;
+
+    ray.W_wip = ray.W_wip * W_specular;
+    ray.p0 = point + kRayEpsilon * normal;
+    ray.dir = reflection_dir;
+    ray.allow_emissive_hit = true;  // specular continuation can hit emitters
+    ray.n_bounces++;
+    return ray;
+}
+
+glm::vec3 MirrorMaterial::color_of_last_bounce(Ray& ray, Intersection& intersection, Scene const& scene) {
+    (void)ray;
+    (void)scene;
+    (void)intersection;
+    return glm::vec3(0.0f);
+}
