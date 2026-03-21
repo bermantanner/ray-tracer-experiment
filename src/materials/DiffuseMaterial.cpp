@@ -55,18 +55,15 @@ glm::vec3 DiffuseMaterial::get_direct_lighting(Intersection const& intersection,
 
     vec3 cumulative_direct_light = vec3(0.0f);
     
-    // Iterate over all light sources
     for (unsigned int idx = 0; idx < scene.light_sources.size(); idx++) {
         ModelBase* light_source = scene.light_sources[idx];
 
-        // Intersection could itself be on one light source, so skip self.
         if (light_source == intersection.model)
             continue;
 
         vec3 summed_samples = vec3(0.0f);
         
         for (int sample_idx = 0; sample_idx < kDirectLightSamples; sample_idx++) {
-            // Get sampled light position on emissive geometry.
             vec3 light_pos = light_source->get_surface_point();
             vec3 to_light = light_pos - intersection.point;
             float dist2 = dot(to_light, to_light);
@@ -76,17 +73,14 @@ glm::vec3 DiffuseMaterial::get_direct_lighting(Intersection const& intersection,
             float dist = std::sqrt(dist2);
             vec3 light_dir = to_light / dist;
 
-            // Lambert's cosine law for the receiver (the surface being shaded)
             float c_x = std::max(dot(intersection.normal, light_dir), 0.0f);
             if (c_x <= 0.0f)
                 continue;
 
-            // Shoot a shadow ray towards light source, offset by epsilon to avoid self-shadowing
             Ray shadow_ray;
             shadow_ray.p0 = intersection.point + kRayEpsilon * intersection.normal; 
             shadow_ray.dir = light_dir; 
 
-            // Visibility check using nearest hit
             Intersection shadow_hit;
             bool is_visible = false;
             

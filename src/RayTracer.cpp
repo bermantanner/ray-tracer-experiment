@@ -140,7 +140,6 @@ Ray RayTracer::ray_thru_pixel(int i, int j) {
     float true_r = std::sqrt(ndc_x * ndc_x + ndc_y * ndc_y);
 
     // lens tuning stuff ----------
-    // increase to push the black edges outward (1.0 -> touches top/bottom, 1.5+ -> fills corners)
     float lens_scale = 1.25f; 
     
     // decreasing this zooms in

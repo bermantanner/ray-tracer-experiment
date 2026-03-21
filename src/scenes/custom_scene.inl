@@ -63,42 +63,38 @@ Scene* build_custom_scene() {
     std::shared_ptr<DiffuseMaterial> diffuse_wall = std::make_shared<DiffuseMaterial>(LinearToSRGB(vec3(0.2f, 0.2f, 0.2f))); // Darker walls for mood
     std::shared_ptr<DiffuseMaterial> diffuse_pillar = std::make_shared<DiffuseMaterial>(LinearToSRGB(vec3(0.1f, 0.1f, 0.1f))); // Almost black pillars
     
-    // NEW: mirror material for the side walls
+    // mirror material for the side walls
     std::shared_ptr<MirrorMaterial> mirror_wall = std::make_shared<MirrorMaterial>(vec3(0.95f)); 
     
     // backlight detail
     std::shared_ptr<DiffuseMaterial> light_material = std::make_shared<DiffuseMaterial>(vec3(0.0f));
-    light_material->convert_to_light(vec3(0.2f, 0.6f, 1.0f), vec3(80.0f)); 
+    light_material->convert_to_light(vec3(0.2f, 0.6f, 1.0f), vec3(400.0f)); 
 
     std::unique_ptr<Node> root_node = std::make_unique<Node>();
 
-    // room
-    // Floor
+    // room ---
+    // floor
     std::unique_ptr<Node> floor_square = std::make_unique<Node>();
     floor_square->model = std::make_unique<Square>(vec3(0.0f), 4.0f, vec3(0.0f, 1.0f, 0.0f), diffuse_wall);
     root_node->childnodes.push_back(std::move(floor_square));
-    // NEW: Scaled by 4 on the Z axis, shifted forward to z = 6.0
     root_node->childtransforms.push_back(translate(vec3(0.0f, -2.0f, 6.0f)) * scale(vec3(1.0f, 1.0f, 4.0f)));
 
-    // Ceiling
+    // ceiling
     std::unique_ptr<Node> ceiling_square = std::make_unique<Node>();
     ceiling_square->model = std::make_unique<Square>(vec3(0.0f), 4.0f, vec3(0.0f, -1.0f, 0.0f), diffuse_wall);
     root_node->childnodes.push_back(std::move(ceiling_square));
-    // NEW: Scaled by 4 on the Z axis, shifted forward to z = 6.0
     root_node->childtransforms.push_back(translate(vec3(0.0f, 2.0f, 6.0f)) * scale(vec3(1.0f, 1.0f, 4.0f)));
 
-    // Left Wall (Mirror)
+    // left wall
     std::unique_ptr<Node> left_square = std::make_unique<Node>();
     left_square->model = std::make_unique<Square>(vec3(0.0f), 4.0f, vec3(1.0f, 0.0f, 0.0f), mirror_wall);
     root_node->childnodes.push_back(std::move(left_square));
-    // NEW: Scaled by 4 on the Z axis, shifted forward to z = 6.0
     root_node->childtransforms.push_back(translate(vec3(-2.0f, 0.0f, 6.0f)) * scale(vec3(1.0f, 1.0f, 4.0f)));
 
-    // Right Wall (Mirror)
+    // right wall
     std::unique_ptr<Node> right_square = std::make_unique<Node>();
     right_square->model = std::make_unique<Square>(vec3(0.0f), 4.0f, vec3(-1.0f, 0.0f, 0.0f), mirror_wall);
     root_node->childnodes.push_back(std::move(right_square));
-    // NEW: Scaled by 4 on the Z axis, shifted forward to z = 6.0
     root_node->childtransforms.push_back(translate(vec3(2.0f, 0.0f, 6.0f)) * scale(vec3(1.0f, 1.0f, 4.0f)));
 
     std::unique_ptr<Node> back_square = std::make_unique<Node>();
@@ -113,20 +109,20 @@ Scene* build_custom_scene() {
     root_node->childtransforms.push_back(translate(vec3(0.0f, -0.5f, -1.9f)));
 
     // stretched pillars
-    int num_pillars = 25; // Drastically increase the number of pillars
+    int num_pillars = 25;
     for (int i = 0; i < num_pillars; i++) {
         std::unique_ptr<Node> pillar = create_cuboid(diffuse_pillar);
         
-        // Scatter randomly across the width of the room
+        // scatter randomly across the width of room
         float x_offset = rand_uniform(-1.8f, 1.8f); 
         
-        // Scatter randomly in depth, keeping them between the camera and the backlight (-1.9f)
+        // scatter randomly across depth
         float z_offset = rand_uniform(-1.5f, 0.8f); 
         
-        // Randomize the thickness of each pillar for variety
+        // randomize thickness
         float thickness = rand_uniform(0.05f, 0.25f);
         
-        // Randomize the rotation
+        // randomize rotation
         float rot_angle = rand_uniform(0.0f, 360.0f);
         
         glm::mat4 scale_matrix = scale(vec3(thickness, 4.0f, thickness));
